@@ -77,26 +77,49 @@ print_status "Python version: $PYTHON_VERSION"
 
 # Install OpenCV system dependencies
 print_status "Installing OpenCV system dependencies (this may take a while)..."
-sudo apt install -y \
-    libgtk-3-dev \
-    libgtk2.0-dev \
-    pkg-config \
-    libavcodec-dev \
-    libavformat-dev \
-    libswscale-dev \
-    libv4l-dev \
-    libxvidcore-dev \
-    libx264-dev \
-    libjpeg-dev \
-    libpng-dev \
-    libtiff-dev \
-    gfortran \
-    openexr \
-    libtbb-dev \
-    libdc1394-dev \
-    v4l-utils \
-    libgl1-mesa-glx \
-    libglib2.0-0
+
+# Try to install packages, handling newer Ubuntu versions
+PACKAGES=(
+    libgtk-3-dev
+    pkg-config
+    libavcodec-dev
+    libavformat-dev
+    libswscale-dev
+    libv4l-dev
+    libjpeg-dev
+    libpng-dev
+    libtiff-dev
+    libtbb-dev
+    v4l-utils
+)
+
+# Install core packages
+sudo apt install -y "${PACKAGES[@]}" || true
+
+# Install OpenGL libraries (package name varies by Ubuntu version)
+if apt-cache show libgl1 &>/dev/null; then
+    print_status "Installing libgl1 (newer Ubuntu)"
+    sudo apt install -y libgl1
+elif apt-cache show libgl1-mesa-glx &>/dev/null; then
+    print_status "Installing libgl1-mesa-glx (older Ubuntu)"
+    sudo apt install -y libgl1-mesa-glx
+fi
+
+# Install glib (package name varies by Ubuntu version)
+if apt-cache show libglib2.0-0t64 &>/dev/null; then
+    print_status "Installing libglib2.0-0t64 (newer Ubuntu)"
+    sudo apt install -y libglib2.0-0t64
+elif apt-cache show libglib2.0-0 &>/dev/null; then
+    print_status "Installing libglib2.0-0 (older Ubuntu)"
+    sudo apt install -y libglib2.0-0
+fi
+
+# Install optional packages (don't fail if not available)
+for pkg in libgtk2.0-dev libxvidcore-dev libx264-dev gfortran openexr libdc1394-dev; do
+    if apt-cache show $pkg &>/dev/null; then
+        sudo apt install -y $pkg 2>/dev/null || true
+    fi
+done
 
 if [ $? -eq 0 ]; then
     print_success "OpenCV dependencies installed"

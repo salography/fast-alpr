@@ -42,32 +42,28 @@ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 
 OpenCV needs GUI libraries for webcam display:
 
 ```bash
-# Install GTK for OpenCV GUI support
-# Note: Some packages may have different names depending on Ubuntu/Debian version
+# Install OpenCV GUI support dependencies
+# Note: Some packages have different names depending on Ubuntu/Debian version
+
+# Core packages (should work on all versions)
 sudo apt install -y \
     libgtk-3-dev \
-    libgtk2.0-dev \
     pkg-config \
     libavcodec-dev \
     libavformat-dev \
     libswscale-dev \
     libv4l-dev \
-    libxvidcore-dev \
-    libx264-dev \
     libjpeg-dev \
     libpng-dev \
     libtiff-dev \
-    gfortran \
-    openexr \
-    libatlas-base-dev \
     libtbb-dev \
-    libdc1394-dev \
-    v4l-utils \
-    libgl1-mesa-glx \
-    libglib2.0-0
+    v4l-utils
 
-# Alternative command if some packages fail (for newer Ubuntu 22.04+):
-# sudo apt install -y libgtk-3-dev libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libjpeg-dev libpng-dev libtiff-dev gfortran openexr libtbb-dev libdc1394-dev v4l-utils libgl1-mesa-glx libglib2.0-0
+# For newer Ubuntu 24.04+ (use libgl1 instead of libgl1-mesa-glx)
+sudo apt install -y libgl1 libglib2.0-0t64
+
+# OR for older Ubuntu 22.04 and earlier (if above fails)
+# sudo apt install -y libgl1-mesa-glx libglib2.0-0
 ```
 
 ### Step 4: Install Git (if not already installed)
@@ -266,7 +262,13 @@ chmod +x install_debian.sh
 # System dependencies
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y python3 python3-pip python3-venv python3-dev git
-sudo apt install -y libgtk-3-dev libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libjpeg-dev libpng-dev libtiff-dev gfortran openexr libtbb-dev libdc1394-dev v4l-utils libgl1-mesa-glx libglib2.0-0
+sudo apt install -y libgtk-3-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libjpeg-dev libpng-dev libtiff-dev libtbb-dev v4l-utils
+
+# For Ubuntu 24.04+ use:
+sudo apt install -y libgl1 libglib2.0-0t64
+
+# For Ubuntu 22.04 and older use:
+# sudo apt install -y libgl1-mesa-glx libglib2.0-0
 
 # Clone and setup
 git clone https://github.com/ankandrew/fast-alpr.git
@@ -323,10 +325,27 @@ done
 sudo apt install -y python3 python3-pip python3-venv git libgl1-mesa-glx libglib2.0-0
 ```
 
+### Issue: "Package 'libgl1-mesa-glx' has no installation candidate"
+
+This package was replaced in Ubuntu 24.04+ and newer Debian versions.
+
+**Solution:**
+```bash
+# For Ubuntu 24.04+ / Debian 13+
+sudo apt install -y libgl1 libglib2.0-0t64
+
+# For Ubuntu 22.04 and older
+sudo apt install -y libgl1-mesa-glx libglib2.0-0
+```
+
 ### Issue: "ImportError: libGL.so.1: cannot open shared object file"
 
 ```bash
-sudo apt install -y libgl1-mesa-glx libglib2.0-0
+# Try newer package first
+sudo apt install -y libgl1
+
+# If that doesn't work, try older name
+sudo apt install -y libgl1-mesa-glx
 ```
 
 ### Issue: "ImportError: libgthread-2.0.so.0"

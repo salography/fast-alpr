@@ -14,9 +14,13 @@ sudo apt install -y \
     python3-pip \
     python3-venv \
     python3-dev \
-    git \
-    libgl1-mesa-glx \
-    libglib2.0-0
+    git
+
+# For Ubuntu 24.04+ use:
+sudo apt install -y libgl1 libglib2.0-0t64
+
+# OR for Ubuntu 22.04 and older use:
+# sudo apt install -y libgl1-mesa-glx libglib2.0-0
 
 
 OPTIONAL (For better OpenCV support)
@@ -46,7 +50,23 @@ pip install opencv-python
 sudo usermod -a -G video $USER
 
 
-ONE-LINE MINIMAL INSTALL
+ONE-LINE MINIMAL INSTALL (Ubuntu 24.04+)
+────────────────────────────────────────────────────────────
+sudo apt update && \
+sudo apt install -y python3 python3-pip python3-venv python3-dev git libgl1 libglib2.0-0t64 && \
+cd ~ && \
+git clone https://github.com/ankandrew/fast-alpr.git && \
+cd fast-alpr && \
+python3 -m venv venv && \
+source venv/bin/activate && \
+pip install --upgrade pip && \
+pip install -e ".[onnx]" && \
+pip uninstall opencv-python-headless -y && \
+pip install opencv-python && \
+sudo usermod -a -G video $USER
+
+
+ONE-LINE MINIMAL INSTALL (Ubuntu 22.04 and older)
 ────────────────────────────────────────────────────────────
 sudo apt update && \
 sudo apt install -y python3 python3-pip python3-venv python3-dev git libgl1-mesa-glx libglib2.0-0 && \
